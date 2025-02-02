@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>52 格顏色網格</title>
+    <style>
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 5px;
+        width: 400px;
+        height: 350px;
+      }
+      .grid-item {
+        width: 100%;
+        height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="shuffleGrid()">隨機排列</button>
+    <div class="grid-container"></div>
+    <script>
+      const colors = {
+        red: "#b31f24",
+        black: "#16212a",
+        white: "#b1c5d2",
+        yellow: "#d2ad2a",
+        green: "#19a125",
+      };
+      const counts = { red: 16, black: 14, white: 14, yellow: 14, green: 14 };
+      let items = [];
+
+      function generateGrid() {
+        items = [];
+        for (let color in colors) {
+          for (let i = 0; i < counts[color]; i++) {
+            items.push(
+              `<div class="grid-item" style="background-color: ${colors[color]};"></div>`
+            );
+          }
+        }
+        document.querySelector(".grid-container").innerHTML = items.join("");
+      }
+
+      function shuffleGrid() {
+        items.sort(() => Math.random() - 0.5);
+        document.querySelector(".grid-container").innerHTML = items.join("");
+      }
+
+      generateGrid();
+    </script>
+  </body>
+</html>
