@@ -7,7 +7,7 @@
     <style>
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+        grid-template-columns: repeat(8, 1fr); /* 固定 8 列 */
         grid-auto-rows: 50px;
         gap: 5px;
         width: 100%;
@@ -37,24 +37,65 @@
         yellow: "#d2ad2a",
         green: "#19a125",
       };
-      const counts = { red: 16, black: 14, white: 14, yellow: 14, green: 14 };
-      let items = [];
+      const counts = { red: 20, black: 13, white: 13, yellow: 13, green: 13 };
+      const ROWS = 9;
+      const COLS = 8;
+      let colorArray = [];
 
       function generateGrid() {
-        items = [];
+        colorArray = [];
         for (let color in colors) {
           for (let i = 0; i < counts[color]; i++) {
-            items.push(
-              `<div class="grid-item" style="background-color: ${colors[color]};"></div>`
-            );
+            colorArray.push(color);
           }
         }
-        document.querySelector(".grid-container").innerHTML = items.join("");
+        shuffleGrid();
       }
 
       function shuffleGrid() {
-        items.sort(() => Math.random() - 0.5);
-        document.querySelector(".grid-container").innerHTML = items.join("");
+        let shuffled = fisherYatesShuffle([...colorArray]);
+        while (!isValidGrid(shuffled)) {
+          shuffled = fisherYatesShuffle([...colorArray]); // 重新洗牌直到符合條件
+        }
+
+        // 建立 HTML
+        const gridHtml = shuffled
+          .map(
+            (color) =>
+              `<div class="grid-item" style="background-color: ${colors[color]};"></div>`
+          )
+          .join("");
+
+        document.querySelector(".grid-container").innerHTML = gridHtml;
+      }
+
+      function fisherYatesShuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function isValidGrid(arr) {
+        for (let i = 0; i < arr.length; i++) {
+          let color = arr[i];
+
+          // 檢查左右（確保不會連續 3 個相同）
+          if (i % COLS >= 2 && arr[i - 1] === color && arr[i - 2] === color) {
+            return false;
+          }
+
+          // 檢查上下（確保不會連續 3 個相同）
+          if (
+            i >= 2 * COLS &&
+            arr[i - COLS] === color &&
+            arr[i - 2 * COLS] === color
+          ) {
+            return false;
+          }
+        }
+        return true;
       }
 
       generateGrid();
